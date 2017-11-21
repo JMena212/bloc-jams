@@ -37,14 +37,11 @@ body.landing {
  }
  .selling-points {
      position: relative;
-     display: table;
-     width: 100%;
  }
  
  .point {
-     display: table-cell;
+    
      position: relative;
-     width: 33.3%;
      padding: 2rem;
      text-align: center;
  }
@@ -53,16 +50,10 @@ body.landing {
      font-size: 1.25rem;
  }
  
- .ion-musical-note {
-   content: '\f20c';
-   font-size: 64px;
-   color: rgb(233,50,117);
-   font-family: "Ionicons"
- }
+ .ion-music-note,
  .ion-radio-waves,
  .ion-iphone {
      color: rgb(233,50,117);
      font-size: 5rem;
-     font-family: "Ionicons"
      
  }
