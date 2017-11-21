@@ -67,9 +67,16 @@
      font-size: 1.25rem;
  }
  
- .ion-music-note,
+ .ion-musical-note {
+   content: '\f20c';
+   font-size: 64px;
+   color: rgb(233,50,117);
+   font-family: "Ionicons"
+ }
  .ion-radio-waves,
  .ion-iphone {
      color: rgb(233,50,117);
      font-size: 5rem;
+     font-family: "Ionicons"
+     
  }
