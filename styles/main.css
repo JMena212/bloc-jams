@@ -61,6 +61,12 @@
  .links-container .navbar-link:hover {
      color: rgb(233,50,117);
  }
+  
+  .navbar-link:active {
+     color: rgb(233,50,117);
+     background-color: white;
+ }
+ 
  
   .hero-content {
      position: relative; /* positioning will be explained in a resource */
