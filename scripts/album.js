@@ -28,6 +28,22 @@ var albumPicasso = {
          { title: 'Wrong phone number', duration: '2:15'}
      ]
  };
+ 
+ 
+  var albumCarter = {
+     title: '4:44',
+     artist: 'JAY-Z',
+     label: 'Roc Nation',
+     year: '2017',
+     albumArtUrl: 'assets/images/album_covers/22.png',
+     songs: [
+         { title: 'Kill Jay Z', duration: '2:51' },
+         { title: 'The Story of O.J.', duration: '3:52' },
+         { title: 'Smile', duration: '4:50'}, 
+         { title: 'Caught Their Eyes', duration: '3:26' },
+         { title: '4:44', duration: '4:44'}
+     ]
+ };
 
  var createSongRow = function(songNumber, songName, songLength) {
      var template =
@@ -40,6 +56,13 @@ var albumPicasso = {
  
      return template;
  };
+ 
+     var albumTitle = document.getElementsByClassName('album-view-title')[0];
+     var albumArtist = document.getElementsByClassName('album-view-artist')[0];
+     var albumReleaseInfo = document.getElementsByClassName('album-view-release-info')[0];
+     var albumImage = document.getElementsByClassName('album-cover-art')[0];
+     var albumSongList = document.getElementsByClassName('album-view-song-list')[0];
+ 
  
  var setCurrentAlbum = function(album) {
      // #1
@@ -66,4 +89,13 @@ var albumPicasso = {
  
  window.onload = function() {
      setCurrentAlbum(albumPicasso);
+     var index = 0;
+     var albums = [albumCarter, albumMarconi, albumPicasso];
+     albumImage.addEventListener("click",function(){
+         setCurrentAlbum(albums[index])
+         index++;
+         if (index == albums.length){
+             index = 0
+         }
+     });
  };
