@@ -27,3 +27,4 @@ var animatePoints = function(points) {
          }
       
      });
+ };
