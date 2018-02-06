@@ -1,6 +1,4 @@
-
-
- var createSongRow = function(songNumber, songName, songLength) {
+var createSongRow = function(songNumber, songName, songLength) {
      var template =
         '<tr class="album-view-song-item">'
       + '  <td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
@@ -22,18 +20,24 @@
 	     if (currentlyPlayingSongNumber !== songNumber) {
 		// Switch from Play -> Pause button to indicate new song is playing.
 		$(this).html(pauseButtonTemplate);
-		currentlyPlayingSongNumber = songNumber;
-       currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+		setSong(songNumber);
        updatePlayerBarSong();
 	    } else if (currentlyPlayingSongNumber === songNumber) {
 		// Switch from Pause -> Play button to pause currently playing song.
 		$(this).html(playButtonTemplate);
 		$('.main-controls .play-pause').html(playerBarPlayButton);
-     	currentlyPlayingSongNumber = null;
-        currentSongFromAlbum = null;
+     	setSong(null);
 	    }
       };
  
+var setSong = function(songNumber){
+     currentlyPlayingSongNumber = parseInt(songNumber);
+     currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+};
+
+var getSongNumberCell = function(number){
+    
+};      
       
       
       var onHover = function(event) {
@@ -114,8 +118,8 @@
     var lastSongNumber = currentlyPlayingSongNumber;
 
     // Set a new current song
-    currentlyPlayingSongNumber = currentSongIndex + 1;
-    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    currentlyPlayingSongNumber = (currentSongIndex + 1);
+    currentSongFromAlbum = currentAlbum.songs[currentSongIndex]
 
     // Update the Player Bar information
     updatePlayerBarSong();
