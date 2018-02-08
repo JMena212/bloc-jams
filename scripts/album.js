@@ -40,8 +40,7 @@ var clickHandler = function() {
 	    
 };
  
-   
-      
+
 
 var onHover = function(event) {
         var songNumberCell = ($(this).find('.song-item-number'));
@@ -191,9 +190,6 @@ var previousSong = function() {
     $lastSongNumberCell.html(lastSongNumber);
 }; 
  
- 
- 
-
  var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
  var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
  var playerBarPlayButton = '<span class="ion-play"></span>';
@@ -207,11 +203,26 @@ var previousSong = function() {
  
  var $previousButton = $('.main-controls .previous');
  var $nextButton = $('.main-controls .next');
- 
+ var $playPauseController = $('.main-controls .play-pause');
  
  $(document).ready(function() {
     setCurrentAlbum(albumPicasso);
     $previousButton.click(previousSong);
     $nextButton.click(nextSong);
+    $playPauseController.click(togglePlayfromPlayerBar);
   });
   
+ function togglePlayfromPlayerBar (){
+    if (currentSoundFile.isPaused()) {
+        currentSoundFile.togglePlay(); //play the song
+        $playPauseController.html(playerBarPauseButton); //change HTML of the player bar's play button to a pause button
+        getSongNumberCell(currentlyPlayingSongNumber).html(pauseButtonTemplate); //change the song number cell from a play button to a pause button
+    } 
+   else if (currentSoundFile) {
+        currentSoundFile.togglePlay();//Pause the song
+        $playPauseController.html(playerBarPlayButton);//Change the HTML of the player bar's pause button to a play button
+        getSongNumberCell(currentlyPlayingSongNumber).html(playButtonTemplate);//Change the song number cell from a pause button to a play button
+        
+    }
+};
+    
