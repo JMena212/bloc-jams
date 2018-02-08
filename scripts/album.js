@@ -8,10 +8,10 @@ var createSongRow = function(songNumber, songName, songLength) {
       ;
  
       var $row = $(template);
-      
+
 var clickHandler = function() {
          var songNumber = parseInt($(this).attr('data-song-number'));
-
+        
 	     if (currentlyPlayingSongNumber !== null) {
 		 // Revert to song number for currently playing song because user started playing new song.
 		 var currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
@@ -21,6 +21,7 @@ var clickHandler = function() {
 		// Switch from Play -> Pause button to indicate new song is playing.
 		  setSong(songNumber);
 		  currentSoundFile.play();
+		   updateSeekBarWhileSongPlays();
 		 $(this).html(pauseButtonTemplate);
 		currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
         updatePlayerBarSong();
@@ -30,6 +31,7 @@ var clickHandler = function() {
                 $(this).html(pauseButtonTemplate);
                 $('.main-controls .play-pause').html(playerBarPauseButton);
                 currentSoundFile.play();
+                 updateSeekBarWhileSongPlays();
             } else {
                 $(this).html(playButtonTemplate);
                 $('.main-controls .play-pause').html(playerBarPlayButton);
@@ -94,7 +96,7 @@ var getSongNumberCell = function(number){
 };   
      
  
- var setCurrentAlbum = function(album) {
+var setCurrentAlbum = function(album) {
      currentAlbum = album;
      var $albumTitle = $('.album-view-title');
      var $albumArtist = $('.album-view-artist');
@@ -116,8 +118,69 @@ var getSongNumberCell = function(number){
         var $newRow = createSongRow(i + 1, album.songs[i].title, album.songs[i].duration);
          $albumSongList.append($newRow);
      }
- };
+};
+
+var updateSeekBarWhileSongPlays = function() {
+     if (currentSoundFile) {
+         // #10
+         currentSoundFile.bind('timeupdate', function(event) {
+             // #11
+             var seekBarFillRatio = this.getTime() / this.getDuration();
+             var $seekBar = $('.seek-control .seek-bar');
  
+             updateSeekPercentage($seekBar, seekBarFillRatio);
+         });
+     }
+};
+
+var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
+    var offsetXPercent = seekBarFillRatio * 100;
+    // #1
+    offsetXPercent = Math.max(0, offsetXPercent);
+    offsetXPercent = Math.min(100, offsetXPercent);
+ 
+    // #2
+    var percentageString = offsetXPercent + '%';
+    $seekBar.find('.fill').width(percentageString);
+    $seekBar.find('.thumb').css({left: percentageString});
+};
+
+var setupSeekBars = function() {
+     var $seekBars = $('.player-bar .seek-bar');
+ 
+     $seekBars.click(function(event) {
+         // #3
+         var offsetX = event.pageX - $(this).offset().left;
+         var barWidth = $(this).width();
+         // #4
+         var seekBarFillRatio = offsetX / barWidth;
+ 
+         // #5
+         updateSeekPercentage($(this), seekBarFillRatio);
+     });
+     $seekBars.find('.thumb').mousedown(function(event) {
+         // #8
+         var $seekBar = $(this).parent();
+ 
+         // #9
+         $(document).bind('mousemove.thumb', function(event){
+             var offsetX = event.pageX - $seekBar.offset().left;
+             var barWidth = $seekBar.width();
+             var seekBarFillRatio = offsetX / barWidth;
+ 
+             updateSeekPercentage($seekBar, seekBarFillRatio);
+         });
+ 
+         // #10
+         $(document).bind('mouseup.thumb', function() {
+             $(document).unbind('mousemove.thumb');
+             $(document).unbind('mouseup.thumb');
+         });
+         
+});
+
+};
+
  
  var trackIndex = function(album, song) {
      return album.songs.indexOf(song);
@@ -148,6 +211,7 @@ var getSongNumberCell = function(number){
     // Set a new current song
     setSong(currentSongIndex + 1);
     currentSoundFile.play();
+    updateSeekBarWhileSongPlays();
     currentSongFromAlbum = currentAlbum.songs[currentSongIndex]
 
     // Update the Player Bar information
@@ -177,7 +241,7 @@ var previousSong = function() {
     setSong(currentSongIndex + 1);
     currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
     currentSoundFile.play();
-
+     updateSeekBarWhileSongPlays();
     // Update the Player Bar information
     updatePlayerBarSong();
 
@@ -205,12 +269,7 @@ var previousSong = function() {
  var $nextButton = $('.main-controls .next');
  var $playPauseController = $('.main-controls .play-pause');
  
- $(document).ready(function() {
-    setCurrentAlbum(albumPicasso);
-    $previousButton.click(previousSong);
-    $nextButton.click(nextSong);
-    $playPauseController.click(togglePlayfromPlayerBar);
-  });
+
   
  function togglePlayfromPlayerBar (){
     if (currentSoundFile.isPaused()) {
@@ -225,4 +284,16 @@ var previousSong = function() {
         
     }
 };
-    
+
+
+ 
+
+
+ 
+  $(document).ready(function() {
+    setCurrentAlbum(albumPicasso);
+    $previousButton.click(previousSong);
+    $nextButton.click(nextSong);
+    $playPauseController.click(togglePlayfromPlayerBar);
+    setupSeekBars();
+  });
