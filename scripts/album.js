@@ -3,7 +3,7 @@ var createSongRow = function(songNumber, songName, songLength) {
         '<tr class="album-view-song-item">'
       + '  <td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
       + '  <td class="song-item-title">' + songName + '</td>'
-      + '  <td class="song-item-duration">' + songLength + '</td>'
+      + '  <td class="song-item-duration">' + filterTimeCode(songLength) + '</td>'
       + '</tr>'
       ;
  
@@ -21,7 +21,7 @@ var clickHandler = function() {
 		// Switch from Play -> Pause button to indicate new song is playing.
 		  setSong(songNumber);
 		  currentSoundFile.play();
-		   updateSeekBarWhileSongPlays();
+		  updateSeekBarWhileSongPlays();
 		 
 		currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
         
@@ -135,8 +135,10 @@ var updateSeekBarWhileSongPlays = function() {
              var $seekBar = $('.seek-control .seek-bar');
  
              updateSeekPercentage($seekBar, seekBarFillRatio);
+             setCurrentTimeInPlayerBar(this.getTime());
          });
      }
+     
 };
 
 var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
@@ -213,6 +215,7 @@ var setupSeekBars = function() {
     $('.currently-playing .artist-name').text(currentAlbum.artist);
     $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist);
     $('.main-controls .play-pause').html(playerBarPauseButton);
+    setTotalTimeInPlayerBar(currentSongFromAlbum.duration);
 };
 
  
@@ -274,6 +277,40 @@ var previousSong = function() {
     $previousSongNumberCell.html(pauseButtonTemplate);
     $lastSongNumberCell.html(lastSongNumber);
 }; 
+
+function togglePlayfromPlayerBar (){
+    if (currentSoundFile.isPaused()) {
+        currentSoundFile.togglePlay(); //play the song
+        $playPauseController.html(playerBarPauseButton); //change HTML of the player bar's play button to a pause button
+        getSongNumberCell(currentlyPlayingSongNumber).html(pauseButtonTemplate); //change the song number cell from a play button to a pause button
+    } 
+   else if (currentSoundFile) {
+        currentSoundFile.togglePlay();//Pause the song
+        $playPauseController.html(playerBarPlayButton);//Change the HTML of the player bar's pause button to a play button
+        getSongNumberCell(currentlyPlayingSongNumber).html(playButtonTemplate);//Change the song number cell from a pause button to a play button
+        
+    }
+};
+
+
+function setCurrentTimeInPlayerBar(currentTime) {
+    $(' .current-time').text(filterTimeCode(currentTime));
+};
+
+
+var setTotalTimeInPlayerBar = function(totalTime) {
+    $('.currently-playing .total-time').text(filterTimeCode(totalTime));
+};
+
+function filterTimeCode(timeInSeconds) {
+    var minTime = Math.floor(parseFloat(timeInSeconds)/60);
+    var secTime = Math.floor(parseFloat(timeInSeconds % 60));
+    if(secTime < 10){
+        secTime = "0" + secTime
+    }
+    var timeFormatted = (minTime + ":" + secTime);
+    return timeFormatted;
+};
  
  var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
  var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
@@ -290,23 +327,6 @@ var previousSong = function() {
  var $nextButton = $('.main-controls .next');
  var $playPauseController = $('.main-controls .play-pause');
  
-
-  
- function togglePlayfromPlayerBar (){
-    if (currentSoundFile.isPaused()) {
-        currentSoundFile.togglePlay(); //play the song
-        $playPauseController.html(playerBarPauseButton); //change HTML of the player bar's play button to a pause button
-        getSongNumberCell(currentlyPlayingSongNumber).html(pauseButtonTemplate); //change the song number cell from a play button to a pause button
-    } 
-   else if (currentSoundFile) {
-        currentSoundFile.togglePlay();//Pause the song
-        $playPauseController.html(playerBarPlayButton);//Change the HTML of the player bar's pause button to a play button
-        getSongNumberCell(currentlyPlayingSongNumber).html(playButtonTemplate);//Change the song number cell from a pause button to a play button
-        
-    }
-};
-
-
   $(document).ready(function() {
     setCurrentAlbum(albumPicasso);
     $previousButton.click(previousSong);
@@ -314,3 +334,7 @@ var previousSong = function() {
     $playPauseController.click(togglePlayfromPlayerBar);
     setupSeekBars();
   });
+  
+//Wrap the arguments passed to setCurrentTimeInPlayerBar()
+//and setTotalTimeInPlayerBar() in a filterTimeCode() call 
+//so the time output below the seek bar is formatted.
